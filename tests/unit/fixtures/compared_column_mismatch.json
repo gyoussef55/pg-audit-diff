@@ -1,0 +1,279 @@
+{
+  "snapshot_version": 1,
+  "captured_at": "2026-08-31T00:00:00+00:00",
+  "server_version": "16.3",
+  "schema": "public",
+  "tables": {
+    "orders": {
+      "table_name": "orders",
+      "table_type": "table"
+    },
+    "users": {
+      "table_name": "users",
+      "table_type": "table"
+    }
+  },
+  "columns": {
+    "orders": [
+      {
+        "column_name": "id",
+        "data_type": "bigint",
+        "is_nullable": false,
+        "column_default": "nextval('orders_id_seq'::regclass)",
+        "is_identity": false,
+        "identity_generation": null,
+        "is_generated": false,
+        "generation_expression": null
+      },
+      {
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "is_nullable": false,
+        "column_default": null,
+        "is_identity": false,
+        "identity_generation": null,
+        "is_generated": false,
+        "generation_expression": null
+      },
+      {
+        "column_name": "amount",
+        "data_type": "numeric(19,4)",
+        "is_nullable": false,
+        "column_default": "0.00",
+        "is_identity": false,
+        "identity_generation": null,
+        "is_generated": false,
+        "generation_expression": null
+      }
+    ],
+    "users": [
+      {
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": false,
+        "column_default": null,
+        "is_identity": false,
+        "identity_generation": null,
+        "is_generated": false,
+        "generation_expression": null
+      },
+      {
+        "column_name": "email",
+        "data_type": "character varying(255)",
+        "is_nullable": false,
+        "column_default": null,
+        "is_identity": false,
+        "identity_generation": null,
+        "is_generated": false,
+        "generation_expression": null
+      },
+      {
+        "column_name": "status",
+        "data_type": "user_status",
+        "is_nullable": false,
+        "column_default": "'active'::user_status",
+        "is_identity": false,
+        "identity_generation": null,
+        "is_generated": false,
+        "generation_expression": null
+      }
+    ]
+  },
+  "pks": [
+    {
+      "table_name": "orders",
+      "constraint_name": "orders_pkey",
+      "columns": [
+        "id"
+      ],
+      "is_valid": true,
+      "is_deferrable": false
+    },
+    {
+      "table_name": "users",
+      "constraint_name": "users_pkey",
+      "columns": [
+        "id"
+      ],
+      "is_valid": true,
+      "is_deferrable": false
+    }
+  ],
+  "ucs": [
+    {
+      "table_name": "users",
+      "constraint_name": "users_email_key",
+      "columns": [
+        "email"
+      ],
+      "is_valid": true,
+      "is_deferrable": false
+    }
+  ],
+  "fks": [
+    {
+      "constraint_name": "orders_user_id_fkey",
+      "table_name": "orders",
+      "referenced_schema": "public",
+      "referenced_table": "users",
+      "columns": [
+        "user_id"
+      ],
+      "referenced_columns": [
+        "id"
+      ],
+      "on_delete": "CASCADE",
+      "on_update": "NO ACTION",
+      "is_valid": true,
+      "is_deferrable": false
+    }
+  ],
+  "indexes": [
+    {
+      "table_name": "users",
+      "index_name": "idx_users_email",
+      "am_name": "btree",
+      "is_unique": false,
+      "is_primary": false,
+      "is_valid": true,
+      "is_ready": true,
+      "is_clustered": false,
+      "constraint_name": null,
+      "tablespace": null,
+      "reloptions": null,
+      "columns": [
+        "email"
+      ],
+      "include_columns": [],
+      "column_details": [
+        "email:text_ops:asc:nulls_last:default"
+      ],
+      "predicate": null
+    },
+    {
+      "table_name": "orders",
+      "index_name": "idx_orders_active_user",
+      "am_name": "btree",
+      "is_unique": false,
+      "is_primary": false,
+      "is_valid": true,
+      "is_ready": true,
+      "is_clustered": false,
+      "constraint_name": null,
+      "tablespace": null,
+      "reloptions": null,
+      "columns": [
+        "user_id"
+      ],
+      "include_columns": [],
+      "column_details": [
+        "user_id:uuid_ops:asc:nulls_last:"
+      ],
+      "predicate": "(amount > (0)::numeric)"
+    }
+  ],
+  "constraints": {
+    "orders": [
+      {
+        "constraint_name": "check_amount_positive",
+        "constraint_type": "c",
+        "definition": "CHECK ((amount >= (0)::numeric))",
+        "is_valid": true,
+        "is_deferrable": false
+      }
+    ]
+  },
+  "types": {
+    "user_status": {
+      "type_name": "user_status",
+      "type_kind": "enum",
+      "enum_values": [
+        "PENDING",
+        "ACTIVE",
+        "SUSPENDED",
+        "DELETED"
+      ],
+      "base_type": null,
+      "attributes": null
+    }
+  },
+  "extensions": {
+    "uuid-ossp": {
+      "extension_name": "uuid-ossp",
+      "version": "1.1",
+      "schema": "public",
+      "description": "generate universally unique identifiers (UUIDs)"
+    }
+  },
+  "functions": {
+    "public.audit_log_fn()": {
+      "function_key": "public.audit_log_fn()",
+      "schema_name": "public",
+      "function_name": "audit_log_fn",
+      "function_signature": "",
+      "return_type": "trigger",
+      "prokind": "f",
+      "volatility": "v",
+      "is_security_definer": false,
+      "is_leakproof": false,
+      "parallel_safety": "u",
+      "definition": "CREATE OR REPLACE FUNCTION public.audit_log_fn()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$ BEGIN RETURN NEW; END; $function$\n"
+    }
+  },
+  "triggers": {
+    "public.users.trg_users_audit": {
+      "table_name": "users",
+      "trigger_name": "trg_users_audit",
+      "events": [
+        "INSERT",
+        "UPDATE"
+      ],
+      "action_timing": "AFTER",
+      "orientation": "ROW",
+      "action_statement": "CREATE TRIGGER trg_users_audit AFTER INSERT OR UPDATE ON users FOR EACH ROW EXECUTE FUNCTION audit_log_fn()",
+      "is_enabled": true
+    }
+  },
+  "views": {
+    "active_users": {
+      "view_name": "active_users",
+      "view_type": "view",
+      "definition": " SELECT id,\n    email\n   FROM users\n  WHERE (status = 'ACTIVE'::user_status);",
+      "is_populated": true
+    }
+  },
+  "sequences": {
+    "orders_id_seq": {
+      "sequence_name": "orders_id_seq",
+      "data_type": "bigint",
+      "start_value": 1,
+      "min_value": 1,
+      "max_value": 9223372036854775807,
+      "increment_by": 1,
+      "cycle": false,
+      "cache_size": 1,
+      "owned_by_table": "orders",
+      "owned_by_column": "id"
+    }
+  },
+  "policies": {
+    "users.users_tenant_isolation": {
+      "table_name": "users",
+      "policy_name": "users_tenant_isolation",
+      "command": "ALL",
+      "roles": [
+        "app_user"
+      ],
+      "is_permissive": true,
+      "using_expression": "(id = (current_setting('app.current_user_id'::text))::uuid)",
+      "check_expression": null
+    }
+  },
+  "migrations": {
+    "1": {
+      "id": 1,
+      "timestamp": 1754006400000,
+      "name": "20260801000000_init"
+    }
+  }
+}

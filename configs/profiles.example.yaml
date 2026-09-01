@@ -1,0 +1,10 @@
+# Copy to profiles.yaml and set real connection URLs.
+profiles:
+  reference:
+    url: postgresql://user:password@reference-host:5432/app
+  compared:
+    url: postgresql://user:password@compared-host:5432/app
+  prod:
+    url: postgresql://user:password@prod-host:5432/app
+  dev:
+    url: postgresql://user:password@dev-host:5432/app
